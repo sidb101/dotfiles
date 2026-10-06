@@ -1,0 +1,44 @@
+# Shared git defaults. Identity is deliberately NOT set here:
+#   ~/.gitconfig.local      per-machine default identity and overrides (untracked)
+#   ~/.gitconfig-personal   personal identity, applied to everything under
+#                           ~/workspace/psnl/ (so work and personal repos on the
+#                           same machine each commit as the right account)
+# Later entries win, so the personal identity overrides the machine default.
+
+[include]
+	path = ~/.gitconfig.local
+
+[includeIf "gitdir:~/workspace/psnl/"]
+	path = ~/.gitconfig-personal
+
+[init]
+	defaultBranch = main
+
+[pull]
+	ff = only
+
+[push]
+	autoSetupRemote = true
+
+[fetch]
+	prune = true
+
+[rebase]
+	autoStash = true
+
+[core]
+	excludesfile = ~/.gitignore_global
+	editor = nvim
+
+[diff]
+	colorMoved = default
+
+[alias]
+	st = status -sb
+	co = checkout
+	sw = switch
+	br = branch -vv
+	lg = log --oneline --graph --decorate -20
+	last = log -1 --stat
+	unstage = restore --staged
+	amend = commit --amend --no-edit

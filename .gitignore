@@ -1,0 +1,3 @@
+# Full iTerm2 exports bundle window/session state and other private data;
+# the curated files in iterm2/ are what this repo tracks.
+*.itermexport

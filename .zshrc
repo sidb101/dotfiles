@@ -29,3 +29,24 @@ export NVM_DIR="$HOME/.nvm"
 
 # Machine-specific settings (work aliases, PATH additions, secrets): not tracked
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
+
+## PATH
+export PATH="$PATH:/Users/siddharth/Software/kafka_2.13-3.5.0/bin"
+export PATH="$PATH:/usr/local/mongodb/bin"
+export PATH="$PATH:/Users/siddharth/Software/spark-3.4.1-bin-hadoop3/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+## Java
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
+
+## Big data
+export AIRFLOW_HOME=~/Software/airflow
+export SPARK_HOME=/Users/siddharth/Software/spark-3.4.1-bin-hadoop3
+
+source ~/.bash_profile
+source $ZSH/oh-my-zsh.sh
+
+## rbenv (Ruby version manager — puts shims ahead of system Ruby)
+eval "$(rbenv init - zsh)"
+

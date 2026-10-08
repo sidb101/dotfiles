@@ -26,6 +26,7 @@ dotfiles/
   .tmux.conf              # tmux config
   tmux-cheatsheet.md      # tmux keys and workflow
   .zshrc                  # Oh My Zsh (afowler), history, fzf, nvm, EDITOR=nvim
+  shell/tmuxlog.zsh       # plog: log a tmux pane to a file (sourced by .zshrc)
   .gitconfig              # shared git defaults and aliases (no identity)
   .gitconfig-personal     # personal identity (GitHub noreply address)
   .gitignore_global       # .DS_Store, swap files, ...
@@ -44,6 +45,15 @@ dotfiles/
 - **Neovim only** (`nvim/init.lua`): installs [Tokyo Night](https://github.com/folke/tokyonight.nvim) (night style) with Neovim's built-in `vim.pack`, so there's no plugin-manager bootstrap. Falls back to the `.vimrc` colorscheme if the plugin isn't available. Needs Neovim 0.12+.
 - **tmux** (`.tmux.conf`): mouse support, windows numbered from 1, splits and new windows open in the current directory, true color, drag-to-copy to the macOS clipboard (`pbcopy`), `Shift-Enter` passthrough (`extended-keys`), and a higher-contrast status bar. Needs tmux 3.2+. Keys are in [`tmux-cheatsheet.md`](tmux-cheatsheet.md).
 - **zsh** (`.zshrc`): Oh My Zsh with the `afowler` theme, 100k-line history, `fzf` key bindings (Ctrl-R, Ctrl-T, Alt-C), `nvm` if installed, `EDITOR=nvim`. Machine-specific settings go in `~/.zshrc.local`, which is sourced last and never tracked.
+- **plog** (`shell/tmuxlog.zsh`, sourced by `.zshrc`): log a tmux pane to `~/.tmux-logs/<name>.log` while it keeps showing as usual, so another terminal (or a Claude session) can `tail` / `grep` it. Wraps `tmux pipe-pane` with explicit start/stop and ANSI stripping:
+
+  ```bash
+  plog start work:3.1 dev-server   # pane = session:window.pane; omit it when run inside the pane
+  plog ls                          # panes being logged + log sizes
+  plog tail dev-server             # tail -f the log
+  plog stop work:3.1               # stop (the file is kept)
+  ```
+
 - **git** (`.gitconfig`): sensible defaults (`pull.ff = only`, `push.autoSetupRemote`, `fetch.prune`, `rebase.autoStash`) and a few aliases (`st`, `lg`, `last`, `amend`, ...).
 - **iTerm2** (`iterm2/`): the profile and a curated set of global preferences, including `Cmd-]` / `Cmd-[` as next/previous pane, which iTerm2 otherwise doesn't honour while Neovim has focus.
 

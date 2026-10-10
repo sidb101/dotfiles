@@ -36,21 +36,21 @@ export NVM_DIR="$HOME/.nvm"
 
 
 ## PATH
-export PATH="$PATH:/Users/siddharth/Software/kafka_2.13-3.5.0/bin"
+export PATH="$PATH:$HOME/Software/kafka_2.13-3.5.0/bin"
 export PATH="$PATH:/usr/local/mongodb/bin"
-export PATH="$PATH:/Users/siddharth/Software/spark-3.4.1-bin-hadoop3/bin"
+export PATH="$PATH:$HOME/Software/spark-3.4.1-bin-hadoop3/bin"
+export PATH="$PATH:$HOME/go/bin"
 export PATH="$HOME/.local/bin:$PATH"
 
 ## Java
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
 
 ## Big data
-export AIRFLOW_HOME=~/Software/airflow
-export SPARK_HOME=/Users/siddharth/Software/spark-3.4.1-bin-hadoop3
+export AIRFLOW_HOME="$HOME/Software/airflow"
+export SPARK_HOME="$HOME/Software/spark-3.4.1-bin-hadoop3"
 
-source ~/.bash_profile
-source $ZSH/oh-my-zsh.sh
+[[ -f "$HOME/.bash_profile" ]] && source "$HOME/.bash_profile"
 
 ## rbenv (Ruby version manager — puts shims ahead of system Ruby)
-eval "$(rbenv init - zsh)"
+command -v rbenv >/dev/null 2>&1 && eval "$(rbenv init - zsh)"
 

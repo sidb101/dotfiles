@@ -419,10 +419,10 @@
       "Command": "",
       "Cursor Color": {
         "Alpha Component": 1.0,
-        "Blue Component": 0.7490196078431373,
+        "Blue Component": 0.5254901960784314,
         "Color Space": "sRGB",
-        "Green Component": 0.3764705882352941,
-        "Red Component": 0.2156862745098039
+        "Green Component": 0.2627450980392157,
+        "Red Component": 0.14901960784313725
       },
       "Cursor Color (Dark)": {
         "Alpha Component": 1.0,
@@ -433,10 +433,10 @@
       },
       "Cursor Color (Light)": {
         "Alpha Component": 1.0,
-        "Blue Component": 0.7490196078431373,
+        "Blue Component": 0.5254901960784314,
         "Color Space": "sRGB",
-        "Green Component": 0.3764705882352941,
-        "Red Component": 0.2156862745098039
+        "Green Component": 0.2627450980392157,
+        "Red Component": 0.14901960784313725
       },
       "Cursor Guide Color": {
         "Alpha Component": 0.25,
@@ -484,13 +484,15 @@
       "Custom Directory": "Advanced",
       "Description": "Sid's profile",
       "Disable Window Resizing": true,
+      "Faint Text Alpha (Dark)": 1.0,
+      "Faint Text Alpha (Light)": 1.0,
       "Flashing Bell": false,
       "Foreground Color": {
         "Alpha Component": 1.0,
-        "Blue Component": 0.7490196078431373,
+        "Blue Component": 0.5254901960784314,
         "Color Space": "sRGB",
-        "Green Component": 0.3764705882352941,
-        "Red Component": 0.2156862745098039
+        "Green Component": 0.2627450980392157,
+        "Red Component": 0.14901960784313725
       },
       "Foreground Color (Dark)": {
         "Alpha Component": 1.0,
@@ -501,10 +503,10 @@
       },
       "Foreground Color (Light)": {
         "Alpha Component": 1.0,
-        "Blue Component": 0.7490196078431373,
+        "Blue Component": 0.5254901960784314,
         "Color Space": "sRGB",
-        "Green Component": 0.3764705882352941,
-        "Red Component": 0.2156862745098039
+        "Green Component": 0.2627450980392157,
+        "Red Component": 0.14901960784313725
       },
       "Guid": "0D96869A-BAC9-55DD-91E6-2BC75615886C",
       "Horizontal Spacing": 1.0,
@@ -587,6 +589,8 @@
         "Green Component": 0.9860088229179382,
         "Red Component": 0.9969714283943176
       },
+      "Minimum Contrast (Dark)": 0.5,
+      "Minimum Contrast (Light)": 0.5039901477832512,
       "Mouse Reporting": true,
       "Name": "Sid",
       "Non Ascii Font": "Monaco 12",

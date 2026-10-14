@@ -11,7 +11,11 @@ filetype plugin indent on
 set textwidth=80
 set colorcolumn=80
 " re-apply after every :colorscheme (a colorscheme resets highlights)
-autocmd ColorScheme * highlight ColorColumn ctermbg=darkgrey guibg=#3c3c3c
+autocmd ColorScheme * if &background ==# 'light'
+      \ | highlight ColorColumn ctermbg=lightgrey guibg=#c4c8da
+      \ | else
+      \ | highlight ColorColumn ctermbg=darkgrey guibg=#3c3c3c
+      \ | endif
 colorscheme habamax
 "set mouse=a
 

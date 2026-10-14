@@ -11,6 +11,7 @@ brew bundle                              # optional: install the tools below
 ./install.sh                             # symlink the config files
 ./extras/install-ohmyzsh.sh              # optional
 ./extras/install-iterm2.sh               # optional (quit iTerm2 first)
+./extras/install-iterm2-colors.sh        # optional (start nvim once first; for non-dynamic profiles)
 ```
 
 `install.sh` symlinks the files below into `$HOME`. Existing real files are backed up as `<file>.bak.<timestamp>`, and re-running is safe.
@@ -22,10 +23,11 @@ dotfiles/
   install.sh              # symlinks everything, checks tools
   Brewfile                # git, gh, neovim, tmux, fzf, ripgrep, jq, iTerm2
   .vimrc                  # shared Vim + Neovim settings (Neovim sources it)
-  nvim/init.lua           # Neovim entrypoint: sources ~/.vimrc, adds Tokyo Night
+  nvim/init.lua           # Neovim entrypoint: sources ~/.vimrc, adds Tokyo Night (follows macOS light/dark)
   .tmux.conf              # tmux config
   tmux-cheatsheet.md      # tmux keys and workflow
   .zshrc                  # Oh My Zsh (afowler), history, fzf, nvm, EDITOR=nvim
+  .zshrc.local.example    # example machine-specific settings; copy to ~/.zshrc.local
   shell/tmuxlog.zsh       # plog: log a tmux pane to a file (sourced by .zshrc)
   .gitconfig              # shared git defaults and aliases (no identity)
   .gitconfig-personal     # personal identity (GitHub noreply address)
@@ -37,14 +39,15 @@ dotfiles/
   extras/
     install-ohmyzsh.sh    # installs Oh My Zsh without touching ~/.zshrc
     install-iterm2.sh     # installs iTerm2, links the profile, applies prefs
+    install-iterm2-colors.sh  # imports the Tokyo Night Day/Night presets into iTerm2 (start nvim once first)
 ```
 
 ## What you get
 
 - **Vim / Neovim** (`.vimrc`): absolute + relative line numbers, 80-column guide, `autoread` (picks up edits made by other programs), and a tidier `netrw` file explorer (25% sidebar, tree view, opens files in the previous window).
-- **Neovim only** (`nvim/init.lua`): installs [Tokyo Night](https://github.com/folke/tokyonight.nvim) (night style) with Neovim's built-in `vim.pack`, so there's no plugin-manager bootstrap. Falls back to the `.vimrc` colorscheme if the plugin isn't available. Needs Neovim 0.12+.
-- **tmux** (`.tmux.conf`): mouse support, windows numbered from 1, splits and new windows open in the current directory, true color, drag-to-copy to the macOS clipboard (`pbcopy`), `Shift-Enter` passthrough (`extended-keys`), and a higher-contrast status bar. Needs tmux 3.2+. Keys are in [`tmux-cheatsheet.md`](tmux-cheatsheet.md).
-- **zsh** (`.zshrc`): Oh My Zsh with the `afowler` theme, 100k-line history, `fzf` key bindings (Ctrl-R, Ctrl-T, Alt-C), `nvm` if installed, `EDITOR=nvim`. Machine-specific settings go in `~/.zshrc.local`, which is sourced last and never tracked.
+- **Neovim only** (`nvim/init.lua`): installs [Tokyo Night](https://github.com/folke/tokyonight.nvim) with Neovim's built-in `vim.pack`, so there's no plugin-manager bootstrap. On macOS it follows the system appearance (`night` in dark mode, `day` in light mode) and re-checks whenever Neovim regains focus. Falls back to the `.vimrc` colorscheme if the plugin isn't available. Needs Neovim 0.12+.
+- **tmux** (`.tmux.conf`): mouse support, windows numbered from 1, splits and new windows open in the current directory, true color, drag-to-copy to the macOS clipboard (`pbcopy`), `Shift-Enter` passthrough (`extended-keys`), a higher-contrast status bar, and 50k lines of scrollback per pane. Needs tmux 3.2+. Keys are in [`tmux-cheatsheet.md`](tmux-cheatsheet.md).
+- **zsh** (`.zshrc`): Oh My Zsh with the `afowler` theme, 100k-line history, `fzf` key bindings (Ctrl-R, Ctrl-T, Alt-C), `nvm` if installed, `EDITOR=nvim`. Machine-specific settings go in `~/.zshrc.local`, which is sourced last and never tracked; [`.zshrc.local.example`](.zshrc.local.example) shows the kind of thing that belongs there (tool PATHs, `JAVA_HOME`, rbenv) and can be copied as a starting point.
 - **plog** (`shell/tmuxlog.zsh`, sourced by `.zshrc`): log a tmux pane to `~/.tmux-logs/<name>.log` while it keeps showing as usual, so another terminal (or a Claude session) can `tail` / `grep` it. Wraps `tmux pipe-pane` with explicit start/stop and ANSI stripping:
 
   ```bash
@@ -71,6 +74,7 @@ The personal identity uses GitHub's private `…@users.noreply.github.com` addre
 ## iTerm2 notes
 
 - `iterm2/Sid.json` is installed as a [Dynamic Profile](https://iterm2.com/documentation-dynamic-profiles.html): iTerm2 loads it automatically and edits to the file show up live. Dynamic profiles are read-only in the GUI, so change the JSON, not the settings window.
+- Colours follow the system appearance: Tokyo Night Day in light mode and Tokyo Night Night in dark mode (the same pair Neovim uses), taken from tokyonight.nvim's `extras/iterm/*.itermcolors`. The 16 ANSI colours differ per mode, so prompt colours such as the git branch stay readable on both backgrounds. `extras/install-iterm2-colors.sh` imports the same two presets into iTerm2's Color Presets list, for profiles other than the dynamic one.
 - `iterm2/global-prefs.plist` only holds the preferences worth syncing (it deliberately leaves out window positions, IDs, and AI settings). `apply-prefs.sh` merges those keys into iTerm2's preferences and leaves everything else alone. iTerm2 rewrites its preferences on quit, so quit it before running the script.
 
 ## Notes

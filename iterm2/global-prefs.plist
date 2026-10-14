@@ -9,7 +9,7 @@
 	<key>ClickToSelectCommand</key>
 	<false/>
 	<key>DimBackgroundWindows</key>
-	<false/>
+	<true/>
 	<key>DimOnlyText</key>
 	<true/>
 	<key>GlobalKeyMap</key>
@@ -187,7 +187,7 @@
 	<key>SoundForEsc</key>
 	<false/>
 	<key>SplitPaneDimmingAmount</key>
-	<real>0.49895350609756073</real>
+	<real>0.5038558874372084</real>
 	<key>StatusBarPosition</key>
 	<integer>0</integer>
 	<key>TabStyleWithAutomaticOption</key>

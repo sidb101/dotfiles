@@ -71,6 +71,7 @@ The personal identity uses GitHub's private `…@users.noreply.github.com` addre
 ## iTerm2 notes
 
 - `iterm2/Sid.json` is installed as a [Dynamic Profile](https://iterm2.com/documentation-dynamic-profiles.html): iTerm2 loads it automatically and edits to the file show up live. Dynamic profiles are read-only in the GUI, so change the JSON, not the settings window.
+- Colours follow the system appearance: Tokyo Night Day in light mode and Tokyo Night Night in dark mode (the same pair Neovim uses), taken from tokyonight.nvim's `extras/iterm/*.itermcolors`. The 16 ANSI colours differ per mode, so prompt colours such as the git branch stay readable on both backgrounds.
 - `iterm2/global-prefs.plist` only holds the preferences worth syncing (it deliberately leaves out window positions, IDs, and AI settings). `apply-prefs.sh` merges those keys into iTerm2's preferences and leaves everything else alone. iTerm2 rewrites its preferences on quit, so quit it before running the script.
 
 ## Notes

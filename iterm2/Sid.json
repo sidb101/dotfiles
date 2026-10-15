@@ -391,7 +391,7 @@
       },
       "Blinking Cursor": false,
       "Blur": true,
-      "Blur Radius": 2.559313616071428,
+      "Blur Radius": 5.0,
       "Bold Color": {
         "Alpha Component": 1.0,
         "Blue Component": 0.4549019607843137,
@@ -705,7 +705,7 @@
       "Tags": [],
       "Terminal Type": "xterm-256color",
       "Title Components": 1,
-      "Transparency": 0.06527200490279926,
+      "Transparency": 0.25,
       "Unlimited Scrollback": true,
       "Use Bold Font": true,
       "Use Bright Bold": true,

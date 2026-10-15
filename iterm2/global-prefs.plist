@@ -8,6 +8,8 @@
 	<false/>
 	<key>ClickToSelectCommand</key>
 	<false/>
+	<key>Default Bookmark Guid</key>
+	<string>0D96869A-BAC9-55DD-91E6-2BC75615886C</string>
 	<key>DimBackgroundWindows</key>
 	<true/>
 	<key>DimOnlyText</key>

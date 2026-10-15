@@ -17,13 +17,33 @@
 #   - Neovim refuses to load init.vim next to init.lua, so a stale
 #     ~/.config/nvim/init.vim is moved aside.
 #
-# Optional extras (run separately): extras/install-ohmyzsh.sh,
-# extras/install-iterm2.sh, and `brew bundle` for the Brewfile.
+# If iTerm2 is installed, this also runs extras/install-iterm2.sh (links the
+# profile, applies the global prefs, makes "Sid" the default profile). iTerm2
+# rewrites its preferences when it quits, so the script stops before changing
+# anything while iTerm2 is running: quit it and run this from Terminal.app.
+# It also installs Oh My Zsh (extras/install-ohmyzsh.sh) when it's missing and
+# creates an empty ~/.zshrc.local when there isn't one.
+# Re-running is how you update an existing machine after a `git pull`.
+#
+# Run `brew bundle` for the Brewfile first on a new machine.
 
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ts=$(date +%Y%m%d_%H%M%S)
+
+if pgrep -x iTerm2 >/dev/null 2>&1; then
+  cat >&2 <<EOF
+iTerm2 is running, and it would overwrite the preferences this script applies.
+Quit iTerm2 (Cmd-Q), then run the install again from a terminal that isn't
+iTerm2, such as Terminal.app:
+
+  "$DOTFILES_DIR/install.sh"
+
+Nothing has been changed.
+EOF
+  exit 1
+fi
 
 # link <source in repo> <destination>: symlink, backing up a real file first.
 link() {
@@ -60,6 +80,16 @@ if [[ -e "$nvim_vim" || -L "$nvim_vim" ]]; then
 fi
 link "$DOTFILES_DIR/nvim/init.lua" "$HOME/.config/nvim/init.lua"
 
+# Machine-specific shell settings: .zshrc sources this last. Never overwritten.
+if [[ ! -e "$HOME/.zshrc.local" ]]; then
+  echo "==> Creating ~/.zshrc.local (machine-specific shell settings)"
+  cat > "$HOME/.zshrc.local" <<'EOF'
+# ~/.zshrc.local — machine-specific shell settings, sourced last by ~/.zshrc.
+# Not tracked by the dotfiles repo. .zshrc.local.example in the repo shows the
+# kind of thing that goes here (tool PATHs, JAVA_HOME, rbenv).
+EOF
+fi
+
 echo
 echo "==> Checking tools..."
 check() {
@@ -75,10 +105,9 @@ check tmux "brew install tmux      (3.2+; see tmux-cheatsheet.md)"
 check fzf  "brew install fzf       (Ctrl-R / Ctrl-T in the shell)"
 echo "    Everything at once:  brew bundle --file=\"$DOTFILES_DIR/Brewfile\""
 
-if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-  echo
-  echo "==> Oh My Zsh isn't installed: run $DOTFILES_DIR/extras/install-ohmyzsh.sh"
-fi
+echo
+echo "==> Oh My Zsh"
+"$DOTFILES_DIR/extras/install-ohmyzsh.sh"
 if [[ -e "$HOME/.zshrc.bak.$ts" ]]; then
   echo
   echo "==> Your previous ~/.zshrc was saved as ~/.zshrc.bak.$ts."
@@ -86,5 +115,11 @@ if [[ -e "$HOME/.zshrc.bak.$ts" ]]; then
 fi
 
 echo
+if [[ -d "/Applications/iTerm.app" ]]; then
+  "$DOTFILES_DIR/extras/install-iterm2.sh"
+else
+  echo "==> iTerm2 isn't installed: brew bundle installs it, then re-run this script."
+fi
+
+echo
 echo "Done. Next: tmux new -s work   (the first nvim launch installs the Tokyo Night theme)"
-echo "Optional: $DOTFILES_DIR/extras/install-iterm2.sh"

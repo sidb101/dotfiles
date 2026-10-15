@@ -4,13 +4,28 @@
 #   iterm2/Sid.json          -> ~/Library/Application Support/iTerm2/DynamicProfiles/
 #                               (iTerm2 loads it automatically; edits to the file
 #                               show up live, and the profile is read-only in the GUI)
-#   iterm2/global-prefs.plist -> merged into iTerm2's preferences (iterm2/apply-prefs.sh)
+#   iterm2/global-prefs.plist -> merged into iTerm2's preferences (iterm2/apply-prefs.sh),
+#                               including which profile is the default
 #
-# Idempotent. Quit iTerm2 before running if you want the global prefs applied.
+# Idempotent. Run by install.sh. iTerm2 rewrites its preferences when it quits,
+# so this stops before changing anything while iTerm2 is running.
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if pgrep -x iTerm2 >/dev/null 2>&1; then
+  cat >&2 <<EOF
+iTerm2 is running, and it would overwrite the preferences this script applies.
+Quit iTerm2 (Cmd-Q), then run the install again from a terminal that isn't
+iTerm2, such as Terminal.app:
+
+  "$REPO_DIR/install.sh"
+
+Nothing has been changed.
+EOF
+  exit 1
+fi
 
 if [[ ! -d "/Applications/iTerm.app" ]]; then
   if command -v brew >/dev/null 2>&1; then
@@ -30,14 +45,9 @@ echo "==> Linking the Sid profile into $PROFILES_DIR"
 mkdir -p "$PROFILES_DIR"
 ln -sfn "$REPO_DIR/iterm2/Sid.json" "$PROFILES_DIR/Sid.json"
 
-echo "==> Applying global preferences (key bindings, tab bar, ...)"
-if pgrep -x iTerm2 >/dev/null; then
-  echo "    iTerm2 is running — quit it, then run:  $REPO_DIR/iterm2/apply-prefs.sh"
-else
-  "$REPO_DIR/iterm2/apply-prefs.sh"
-fi
+echo "==> Applying global preferences (key bindings, tab bar, default profile, ...)"
+"$REPO_DIR/iterm2/apply-prefs.sh"
 
-cat <<'EOF'
-
-Next: open iTerm2 → Settings → Profiles → "Sid" → Other Actions → Set as Default.
-EOF
+echo
+echo "Start iTerm2. If \"Sid\" isn't the default profile, set it once under"
+echo "Settings → Profiles → Sid → Other Actions → Set as Default."

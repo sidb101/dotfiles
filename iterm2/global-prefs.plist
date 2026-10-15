@@ -6,6 +6,8 @@
 	<true/>
 	<key>AlwaysOpenWindowAtStartup</key>
 	<false/>
+	<key>ApplePressAndHoldEnabled</key>
+	<false/>
 	<key>ClickToSelectCommand</key>
 	<false/>
 	<key>Default Bookmark Guid</key>

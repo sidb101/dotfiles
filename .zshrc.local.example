@@ -1,11 +1,10 @@
 # ~/.zshrc.local — machine-specific shell settings (example).
 #
-# .zshrc sources ~/.zshrc.local if it exists, after everything else. This file
-# is a tracked example of what goes there: tool locations, language runtimes and
-# version managers that differ per machine. Copy it and trim to what exists on
-# the machine:
-#
-#   cp ~/dotfiles/.zshrc.local.example ~/.zshrc.local
+# .zshrc sources ~/.zshrc.local after everything else. install.sh creates that
+# file empty if it doesn't exist and never overwrites it. This file is a tracked
+# example of what goes there: tool locations, language runtimes and version
+# managers that differ per machine. Copy the lines that apply to the machine
+# into ~/.zshrc.local.
 #
 # These lines were moved here verbatim from .zshrc.
 

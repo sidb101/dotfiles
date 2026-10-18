@@ -22,7 +22,22 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
 export AIRFLOW_HOME="$HOME/Software/airflow"
 export SPARK_HOME="$HOME/Software/spark-3.4.1-bin-hadoop3"
 
-[[ -f "$HOME/.bash_profile" ]] && source "$HOME/.bash_profile"
+## Rust / Scala (the non-conda parts of a typical ~/.bash_profile)
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+export PATH="$PATH:$HOME/Library/Application Support/Coursier/bin"
+
+## conda, loaded on first use. Sourcing ~/.bash_profile (where `conda init` puts
+## its hook) costs ~800 ms in every new shell; this defers the hook until
+## `conda` is first called. `base` is then not active by default: run
+## `conda activate` when you want it.
+_conda_bin=/opt/homebrew/Caskroom/miniconda/base/bin/conda
+if [[ -x $_conda_bin ]]; then
+  conda() {
+    unfunction conda
+    eval "$("$_conda_bin" shell.zsh hook)"
+    conda "$@"
+  }
+fi
 
 ## rbenv (Ruby version manager — puts shims ahead of system Ruby)
 command -v rbenv >/dev/null 2>&1 && eval "$(rbenv init - zsh)"

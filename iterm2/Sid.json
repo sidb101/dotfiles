@@ -4,9 +4,9 @@
       "ASCII Anti Aliased": true,
       "AWDS Pane Directory": "",
       "AWDS Pane Option": "Recycle",
-      "AWDS Tab Directory": "~/workspace",
+      "AWDS Tab Directory": "~/",
       "AWDS Tab Option": "Yes",
-      "AWDS Window Directory": "~/workspace",
+      "AWDS Window Directory": "~/",
       "AWDS Window Option": "Yes",
       "Ambiguous Double Width": false,
       "Ansi 0 Color": {

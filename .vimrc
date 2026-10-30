@@ -20,7 +20,7 @@ colorscheme habamax
 "set mouse=a
 
 " netrw (file explorer)
-let g:netrw_winsize = 25        " :Lex takes 25% of the window width
+let g:netrw_winsize = -30       " :Lex is 30 columns wide (negative = absolute, not a % of the window)
 let g:netrw_banner = 0          " hide the header
 let g:netrw_liststyle = 3       " tree view
 let g:netrw_browse_split = 4    " open files in the previous window

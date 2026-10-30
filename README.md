@@ -49,7 +49,7 @@ dotfiles/
 
 ## What you get
 
-- **Vim / Neovim** (`.vimrc`): absolute + relative line numbers, 80-column guide, `autoread` (picks up edits made by other programs), and a tidier `netrw` file explorer (25% sidebar, tree view, opens files in the previous window).
+- **Vim / Neovim** (`.vimrc`): absolute + relative line numbers, 80-column guide, `autoread` (picks up edits made by other programs), and a tidier `netrw` file explorer (30-column sidebar, tree view, opens files in the previous window).
 - **Neovim only** (`nvim/init.lua`): installs [Tokyo Night](https://github.com/folke/tokyonight.nvim) with Neovim's built-in `vim.pack`, so there's no plugin-manager bootstrap. On macOS it follows the system appearance (`night` in dark mode, `day` in light mode) and re-checks whenever Neovim regains focus. Falls back to the `.vimrc` colorscheme if the plugin isn't available. Needs Neovim 0.12+.
 - **tmux** (`.tmux.conf`): mouse support, windows numbered from 1, splits and new windows open in the current directory, true color, drag-to-copy to the macOS clipboard (`pbcopy`), `Shift-Enter` passthrough (`extended-keys`), a higher-contrast status bar, and 50k lines of scrollback per pane. Needs tmux 3.2+. Keys are in [`tmux-cheatsheet.md`](tmux-cheatsheet.md).
 - **zsh** (`.zshrc`): Oh My Zsh with the `afowler` theme, 100k-line history, `fzf` key bindings (Ctrl-R, Ctrl-T, Alt-C), `nvm` if installed, `EDITOR=nvim`. Machine-specific settings go in `~/.zshrc.local`, which `install.sh` creates empty, `.zshrc` sources last, and git never tracks; [`.zshrc.local.example`](.zshrc.local.example) shows the kind of thing that belongs there (tool PATHs, `JAVA_HOME`, rbenv) and can be copied from.

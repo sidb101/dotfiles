@@ -7,6 +7,7 @@ brew "tmux"
 brew "fzf"
 brew "ripgrep"
 brew "jq"
+brew "terminal-notifier"   # clickable notifications for bin/claude-notify
 
 # Skip if iTerm2 was installed by hand (avoids a cask conflict)
 cask "iterm2" unless File.exist?("/Applications/iTerm.app")

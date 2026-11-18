@@ -31,5 +31,8 @@ export NVM_DIR="$HOME/.nvm"
 # :A resolves the ~/.zshrc symlink, so this finds the repo wherever it is cloned.
 [[ -r "${${(%):-%x}:A:h}/shell/tmuxlog.zsh" ]] && source "${${(%):-%x}:A:h}/shell/tmuxlog.zsh"
 
+# bin/ (claude-notify, a Claude Code hook script) on PATH; :A resolves the ~/.zshrc symlink.
+path=("${${(%):-%x}:A:h}/bin" $path)
+
 # Machine-specific settings (work aliases, PATH additions, secrets): not tracked
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

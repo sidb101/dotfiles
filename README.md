@@ -27,7 +27,7 @@ Re-running is safe, and is also how you update a machine after a `git pull`.
 ```
 dotfiles/
   install.sh              # the whole install/update: symlinks, ~/.zshrc.local, Oh My Zsh, iTerm2
-  Brewfile                # git, gh, neovim, tmux, fzf, ripgrep, jq, iTerm2
+  Brewfile                # git, gh, neovim, tmux, fzf, ripgrep, jq, terminal-notifier, iTerm2
   .vimrc                  # shared Vim + Neovim settings (Neovim sources it)
   nvim/init.lua           # Neovim entrypoint: sources ~/.vimrc, adds Tokyo Night (follows macOS light/dark)
   .tmux.conf              # tmux config
@@ -35,6 +35,7 @@ dotfiles/
   .zshrc                  # Oh My Zsh (afowler), history, fzf, nvm, EDITOR=nvim
   .zshrc.local.example    # example of what goes in ~/.zshrc.local (install.sh creates that file, empty)
   shell/tmuxlog.zsh       # plog: log a tmux pane to a file (sourced by .zshrc)
+  bin/claude-notify       # Claude Code hook: red tmux tab + macOS notification that jumps back
   .gitconfig              # shared git defaults and aliases (no identity)
   .gitconfig-personal     # personal identity (GitHub noreply address)
   .gitignore_global       # .DS_Store, swap files, ...
@@ -51,7 +52,7 @@ dotfiles/
 
 - **Vim / Neovim** (`.vimrc`): absolute + relative line numbers, 80-column guide, `autoread` (picks up edits made by other programs), and a tidier `netrw` file explorer (30-column sidebar, tree view, opens files in the previous window).
 - **Neovim only** (`nvim/init.lua`): installs [Tokyo Night](https://github.com/folke/tokyonight.nvim) with Neovim's built-in `vim.pack`, so there's no plugin-manager bootstrap. On macOS it follows the system appearance (`night` in dark mode, `day` in light mode) and re-checks whenever Neovim regains focus. Falls back to the `.vimrc` colorscheme if the plugin isn't available. Needs Neovim 0.12+.
-- **tmux** (`.tmux.conf`): mouse support, windows numbered from 1, splits and new windows open in the current directory, true color, drag-to-copy to the macOS clipboard (`pbcopy`), `Shift-Enter` passthrough (`extended-keys`), a higher-contrast status bar, and 50k lines of scrollback per pane. Needs tmux 3.2+. Keys are in [`tmux-cheatsheet.md`](tmux-cheatsheet.md).
+- **tmux** (`.tmux.conf`): mouse support, windows numbered from 1, splits and new windows open in the current directory, true color, drag-to-copy to the macOS clipboard (`pbcopy`), `Shift-Enter` passthrough (`extended-keys`), a higher-contrast status bar (a window that rang the bell turns red), and 50k lines of scrollback per pane. Needs tmux 3.2+. Keys are in [`tmux-cheatsheet.md`](tmux-cheatsheet.md).
 - **zsh** (`.zshrc`): Oh My Zsh with the `afowler` theme, 100k-line history, `fzf` key bindings (Ctrl-R, Ctrl-T, Alt-C), `nvm` if installed, `EDITOR=nvim`. Machine-specific settings go in `~/.zshrc.local`, which `install.sh` creates empty, `.zshrc` sources last, and git never tracks; [`.zshrc.local.example`](.zshrc.local.example) shows the kind of thing that belongs there (tool PATHs, `JAVA_HOME`, rbenv) and can be copied from.
 - **plog** (`shell/tmuxlog.zsh`, sourced by `.zshrc`): log a tmux pane to `~/.tmux-logs/<name>.log` while it keeps showing as usual, so another terminal (or a Claude session) can `tail` / `grep` it. Wraps `tmux pipe-pane` with explicit start/stop and ANSI stripping:
 
@@ -61,6 +62,18 @@ dotfiles/
   plog tail dev-server             # tail -f the log
   plog stop work:3.1               # stop (the file is kept)
   ```
+
+- **claude-notify** (`bin/claude-notify`, on `PATH` via `.zshrc`): a Claude Code hook for running several sessions as tmux windows. It rings the bell in the session's pane, so that window's tab turns red in the status bar (`window-status-bell-style` in `.tmux.conf`), and posts a macOS notification titled with the window (e.g. `Claude · 3:exchange`). Clicking it selects that tmux window and raises the iTerm2 window showing it. It uses `terminal-notifier` (in the `Brewfile`; allow its notifications once in System Settings → Notifications, and if it isn't listed run `open $(brew --prefix terminal-notifier)/terminal-notifier.app --args -message hi` to trigger the prompt), falling back to `osascript`, whose notifications show as "Script Editor" and can't jump. Add the hooks to `~/.claude/settings.json` (not tracked here):
+
+  ```json
+  "hooks": {
+    "Notification": [{ "hooks": [{ "type": "command", "command": "claude-notify" }] }],
+    "PreToolUse": [{ "matcher": "AskUserQuestion",
+                     "hooks": [{ "type": "command", "command": "claude-notify 'Asking you a question'" }] }]
+  }
+  ```
+
+  `Notification` fires on permission prompts and when Claude has been idle waiting for you; the `PreToolUse` hook covers multiple-choice questions. The first click may ask to let terminal-notifier control iTerm2: allow it.
 
 - **git** (`.gitconfig`): sensible defaults (`pull.ff = only`, `push.autoSetupRemote`, `fetch.prune`, `rebase.autoStash`) and a few aliases (`st`, `lg`, `last`, `amend`, ...).
 - **iTerm2** (`iterm2/`): the profile and a curated set of global preferences, including `Cmd-]` / `Cmd-[` as next/previous pane, which iTerm2 otherwise doesn't honour while Neovim has focus.

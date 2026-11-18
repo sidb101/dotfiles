@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Claude Code hook: flag this tmux window (bell -> red in the status bar) and
+# post a macOS notification naming the window; clicking it jumps back there.
+# Message comes from $1, else from the hook's JSON on stdin (.message).
+# --focus <pane>: notification click handler. Select the pane's tmux window,
+# then raise the iTerm window/tab whose tty is the tmux client showing it.
+if [ "${1:-}" = "--focus" ]; then
+  pane=$2
+  tmux select-window -t "$pane" 2>/dev/null
+  tty=$(tmux list-clients -t "$(tmux display-message -p -t "$pane" '#{session_name}')" \
+        -F '#{client_tty}' 2>/dev/null | head -1)
+  osascript \
+    -e 'on run argv' \
+    -e 'tell application "iTerm2"' \
+    -e 'activate' \
+    -e 'repeat with w in windows' \
+    -e 'repeat with t in tabs of w' \
+    -e 'repeat with s in sessions of t' \
+    -e 'if (tty of s) is (item 1 of argv) then' \
+    -e 'select w' \
+    -e 'tell t to select' \
+    -e 'tell s to select' \
+    -e 'return' \
+    -e 'end if' \
+    -e 'end repeat' \
+    -e 'end repeat' \
+    -e 'end repeat' \
+    -e 'end tell' \
+    -e 'end run' \
+    "$tty" >/dev/null 2>&1
+  exit 0
+fi
+
+msg=${1:-}
+if [ -z "$msg" ] && command -v jq >/dev/null; then
+  msg=$(jq -r '.message // empty' 2>/dev/null)
+fi
+msg=${msg:-Needs your attention}
+
+where=
+if [ -n "$TMUX_PANE" ]; then
+  tty=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_tty}')
+  where=" · $(tmux display-message -p -t "$TMUX_PANE" '#{window_index}:#{window_name}')"
+  [ -n "$tty" ] && printf '\a' > "$tty"
+fi
+
+if command -v terminal-notifier >/dev/null; then
+  # own app identity; clicking runs --focus above
+  args=(-title "Claude$where" -message "$msg" -group "claude-${TMUX_PANE:-none}")
+  if [ -n "$TMUX_PANE" ]; then
+    self=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")
+    args+=(-execute "PATH=$PATH '$self' --focus '$TMUX_PANE'")
+  else
+    args+=(-activate com.googlecode.iterm2)
+  fi
+  terminal-notifier "${args[@]}" >/dev/null 2>&1
+else
+  osascript \
+    -e 'on run argv' \
+    -e 'display notification (item 1 of argv) with title (item 2 of argv)' \
+    -e 'end run' \
+    "$msg" "Claude$where" >/dev/null 2>&1 || true
+fi

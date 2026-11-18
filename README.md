@@ -36,6 +36,9 @@ dotfiles/
   .zshrc.local.example    # example of what goes in ~/.zshrc.local (install.sh creates that file, empty)
   shell/tmuxlog.zsh       # plog: log a tmux pane to a file (sourced by .zshrc)
   bin/claude-notify       # Claude Code hook: red tmux tab + macOS notification that jumps back
+  claude/
+    keybindings.json      # Claude Code keybindings: ctrl+b no longer backgrounds a task (tmux prefix)
+    settings.json         # Claude Code settings (no permissions); merged into ~/.claude/settings.json
   .gitconfig              # shared git defaults and aliases (no identity)
   .gitconfig-personal     # personal identity (GitHub noreply address)
   .gitignore_global       # .DS_Store, swap files, ...
@@ -46,6 +49,7 @@ dotfiles/
   extras/
     install-ohmyzsh.sh    # installs Oh My Zsh without touching ~/.zshrc (run by install.sh)
     install-iterm2.sh     # installs iTerm2, links the profile, applies prefs (run by install.sh)
+    install-claude-settings.sh  # merges claude/settings.json into ~/.claude/settings.json (run by install.sh)
 ```
 
 ## What you get
@@ -63,18 +67,11 @@ dotfiles/
   plog stop work:3.1               # stop (the file is kept)
   ```
 
-- **claude-notify** (`bin/claude-notify`, on `PATH` via `.zshrc`): a Claude Code hook for running several sessions as tmux windows. It rings the bell in the session's pane, so that window's tab turns red in the status bar (`window-status-bell-style` in `.tmux.conf`), and posts a macOS notification titled with the window (e.g. `Claude · 3:exchange`). Clicking it selects that tmux window and raises the iTerm2 window showing it. It uses `terminal-notifier` (in the `Brewfile`; allow its notifications once in System Settings → Notifications, and if it isn't listed run `open $(brew --prefix terminal-notifier)/terminal-notifier.app --args -message hi` to trigger the prompt), falling back to `osascript`, whose notifications show as "Script Editor" and can't jump. Add the hooks to `~/.claude/settings.json` (not tracked here):
-
-  ```json
-  "hooks": {
-    "Notification": [{ "hooks": [{ "type": "command", "command": "claude-notify" }] }],
-    "PreToolUse": [{ "matcher": "AskUserQuestion",
-                     "hooks": [{ "type": "command", "command": "claude-notify 'Asking you a question'" }] }]
-  }
-  ```
+- **claude-notify** (`bin/claude-notify`, on `PATH` via `.zshrc`): a Claude Code hook for running several sessions as tmux windows. It rings the bell in the session's pane, so that window's tab turns red in the status bar (`window-status-bell-style` in `.tmux.conf`), and posts a macOS notification titled with the window (e.g. `Claude · 3:exchange`). Clicking it selects that tmux window and raises the iTerm2 window showing it. It uses `terminal-notifier` (in the `Brewfile`; allow its notifications once in System Settings → Notifications, and if it isn't listed run `open $(brew --prefix terminal-notifier)/terminal-notifier.app --args -message hi` to trigger the prompt), falling back to `osascript`, whose notifications show as "Script Editor" and can't jump. The hooks that call it are in `claude/settings.json` (below).
 
   `Notification` fires on permission prompts and when Claude has been idle waiting for you; the `PreToolUse` hook covers multiple-choice questions. The first click may ask to let terminal-notifier control iTerm2: allow it.
 
+- **Claude Code** (`claude/`): `keybindings.json` is symlinked to `~/.claude/keybindings.json` (it unbinds `ctrl+b`, which would otherwise send a task to the background whenever you hit the tmux prefix). `settings.json` (model/effort, theme, focus view, the `claude-notify` hooks) is merged into `~/.claude/settings.json` by `extras/install-claude-settings.sh` instead of linked: the repo's keys win, while `permissions`, MCP servers and anything else already in the live file are kept, and a backup is written first. Permissions aren't tracked; they accumulate on each machine as you approve things. Needs `jq`.
 - **git** (`.gitconfig`): sensible defaults (`pull.ff = only`, `push.autoSetupRemote`, `fetch.prune`, `rebase.autoStash`) and a few aliases (`st`, `lg`, `last`, `amend`, ...).
 - **iTerm2** (`iterm2/`): the profile and a curated set of global preferences, including `Cmd-]` / `Cmd-[` as next/previous pane, which iTerm2 otherwise doesn't honour while Neovim has focus.
 

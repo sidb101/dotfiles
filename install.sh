@@ -8,6 +8,9 @@
 #   .gitconfig          -> ~/.gitconfig             shared defaults + aliases
 #   .gitconfig-personal -> ~/.gitconfig-personal    personal identity (see below)
 #   .gitignore_global   -> ~/.gitignore_global
+#   claude/keybindings.json -> ~/.claude/keybindings.json   Claude Code keybindings
+#   claude/settings.json    merged into ~/.claude/settings.json (not linked; see
+#                           extras/install-claude-settings.sh)
 #
 # An existing real file is moved to <file>.bak.<timestamp> first, so re-running
 # is safe. Exceptions:
@@ -80,6 +83,13 @@ if [[ -e "$nvim_vim" || -L "$nvim_vim" ]]; then
 fi
 link "$DOTFILES_DIR/nvim/init.lua" "$HOME/.config/nvim/init.lua"
 
+# Claude Code: keybindings are linked; settings are merged so permissions (which
+# accumulate per machine) and other local keys in ~/.claude/settings.json survive.
+echo
+echo "==> Claude Code config"
+link "$DOTFILES_DIR/claude/keybindings.json" "$HOME/.claude/keybindings.json"
+"$DOTFILES_DIR/extras/install-claude-settings.sh"
+
 # Machine-specific shell settings: .zshrc sources this last. Never overwritten.
 if [[ ! -e "$HOME/.zshrc.local" ]]; then
   echo "==> Creating ~/.zshrc.local (machine-specific shell settings)"
@@ -103,6 +113,7 @@ check git  "xcode-select --install"
 check nvim "brew install neovim    (0.12+ needed for the built-in plugin manager)"
 check tmux "brew install tmux      (3.2+; see tmux-cheatsheet.md)"
 check fzf  "brew install fzf       (Ctrl-R / Ctrl-T in the shell)"
+check jq   "brew install jq        (merges claude/settings.json into ~/.claude/settings.json)"
 echo "    Everything at once:  brew bundle --file=\"$DOTFILES_DIR/Brewfile\""
 
 echo

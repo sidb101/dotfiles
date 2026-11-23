@@ -1,47 +1,53 @@
 #!/usr/bin/env bash
-# install-claude-settings.sh — merge claude/settings.json into ~/.claude/settings.json.
+# install-claude-settings.sh — apply the tracked Claude Code config to this machine.
 #
-# The repo file wins for the keys it contains; everything else in the live file
-# (permissions, which accumulate per machine, MCP servers, ...) is kept. Objects
-# merge recursively; arrays such as the hook lists are replaced. The live file is
-# backed up before it changes. It's merged rather than symlinked because Claude
-# Code rewrites settings.json itself, and that would write machine-specific
-# permissions into the repo.
+#   claude/settings.json      merged into ~/.claude/settings.json
+#   claude/global-config.json merged into ~/.claude.json  (keys Claude Code only
+#                             reads from there, e.g. leftArrowOpensAgents; it
+#                             ignores them in settings.json)
+#
+# The repo's keys win; everything else in the live file (permissions, which
+# accumulate per machine, MCP servers, account state, ...) is kept. Objects merge
+# recursively; arrays such as the hook lists are replaced. A live file is backed
+# up before it changes. Merged rather than symlinked because Claude Code rewrites
+# both files itself, and that would write machine-specific data into the repo.
 #
 # Safe to re-run. Needs jq.
 
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-src="$DOTFILES_DIR/claude/settings.json"
-dest="${CLAUDE_DIR:-$HOME/.claude}/settings.json"
 
 if ! command -v jq >/dev/null 2>&1; then
-  echo "    [SKIP] jq not installed (brew install jq), so $dest was not touched"
+  echo "    [SKIP] jq not installed (brew install jq), so the Claude Code config was not touched"
   exit 0
 fi
 
-mkdir -p "$(dirname "$dest")"
-if [[ ! -e "$dest" ]]; then
-  cp "$src" "$dest"
-  echo "    [done] created $dest"
-  exit 0
-fi
+# merge_json <repo file> <live file>
+merge_json() {
+  local src="$1" dest="$2" tmp backup
+  if [[ ! -e "$dest" ]]; then
+    mkdir -p "$(dirname "$dest")"
+    cp "$src" "$dest"
+    echo "    [done] created $dest"
+    return
+  fi
+  if ! jq -e . "$dest" >/dev/null 2>&1; then
+    echo "    [SKIP] $dest isn't valid JSON, so it was not touched" >&2
+    return
+  fi
+  tmp="$(mktemp)"
+  jq -s '.[0] * .[1]' "$dest" "$src" > "$tmp"
+  if [[ "$(jq -S . "$tmp")" == "$(jq -S . "$dest")" ]]; then
+    echo "    [ ok ] $dest already current"
+  else
+    backup="$dest.bak.$(date +%Y%m%d_%H%M%S)"
+    cp -p "$dest" "$backup"
+    cat "$tmp" > "$dest"   # in place, so the file keeps its permissions
+    echo "    [done] merged $src into $dest (backup: $backup)"
+  fi
+  rm -f "$tmp"
+}
 
-if ! jq -e . "$dest" >/dev/null 2>&1; then
-  echo "    [SKIP] $dest isn't valid JSON, so it was not touched" >&2
-  exit 0
-fi
-
-tmp="$(mktemp)"
-trap 'rm -f "$tmp"' EXIT
-jq -s '.[0] * .[1]' "$dest" "$src" > "$tmp"
-
-if [[ "$(jq -S . "$tmp")" == "$(jq -S . "$dest")" ]]; then
-  echo "    [ ok ] $dest already current"
-else
-  backup="$dest.bak.$(date +%Y%m%d_%H%M%S)"
-  cp "$dest" "$backup"
-  cat "$tmp" > "$dest"
-  echo "    [done] merged $src into $dest (backup: $backup)"
-fi
+merge_json "$DOTFILES_DIR/claude/settings.json"      "${CLAUDE_DIR:-$HOME/.claude}/settings.json"
+merge_json "$DOTFILES_DIR/claude/global-config.json" "${CLAUDE_GLOBAL_CONFIG:-$HOME/.claude.json}"

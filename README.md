@@ -39,6 +39,7 @@ dotfiles/
   claude/
     keybindings.json      # Claude Code keybindings: ctrl+b no longer backgrounds a task (tmux prefix)
     settings.json         # Claude Code settings (no permissions); merged into ~/.claude/settings.json
+    global-config.json    # keys Claude Code only reads from ~/.claude.json (left arrow stays off); merged there
   .gitconfig              # shared git defaults and aliases (no identity)
   .gitconfig-personal     # personal identity (GitHub noreply address)
   .gitignore_global       # .DS_Store, swap files, ...
@@ -49,7 +50,7 @@ dotfiles/
   extras/
     install-ohmyzsh.sh    # installs Oh My Zsh without touching ~/.zshrc (run by install.sh)
     install-iterm2.sh     # installs iTerm2, links the profile, applies prefs (run by install.sh)
-    install-claude-settings.sh  # merges claude/settings.json into ~/.claude/settings.json (run by install.sh)
+    install-claude-settings.sh  # merges claude/settings.json and claude/global-config.json into ~/.claude/ (run by install.sh)
 ```
 
 ## What you get
@@ -71,7 +72,7 @@ dotfiles/
 
   `Notification` fires on permission prompts and when Claude has been idle waiting for you; the `PreToolUse` hook covers multiple-choice questions. The first click may ask to let terminal-notifier control iTerm2: allow it.
 
-- **Claude Code** (`claude/`): `keybindings.json` is symlinked to `~/.claude/keybindings.json` (it unbinds `ctrl+b`, which would otherwise send a task to the background whenever you hit the tmux prefix). `settings.json` (model/effort, theme, focus view, the `claude-notify` hooks) is merged into `~/.claude/settings.json` by `extras/install-claude-settings.sh` instead of linked: the repo's keys win, while `permissions`, MCP servers and anything else already in the live file are kept, and a backup is written first. Permissions aren't tracked; they accumulate on each machine as you approve things. Needs `jq`.
+- **Claude Code** (`claude/`): `keybindings.json` is symlinked to `~/.claude/keybindings.json` (it unbinds `ctrl+b`, which would otherwise send a task to the background whenever you hit the tmux prefix). `settings.json` (model/effort, theme, focus view, the `claude-notify` hooks) is merged into `~/.claude/settings.json`, and `global-config.json` (keys Claude Code only reads from `~/.claude.json`, currently `leftArrowOpensAgents: false`, which stops the left arrow from sending a session to the background) into `~/.claude.json`, by `extras/install-claude-settings.sh` instead of being linked: the repo's keys win, while `permissions`, MCP servers, account state and anything else already in the live file are kept, and a backup is written first. Permissions aren't tracked; they accumulate on each machine as you approve things. Needs `jq`.
 - **git** (`.gitconfig`): sensible defaults (`pull.ff = only`, `push.autoSetupRemote`, `fetch.prune`, `rebase.autoStash`) and a few aliases (`st`, `lg`, `last`, `amend`, ...).
 - **iTerm2** (`iterm2/`): the profile and a curated set of global preferences, including `Cmd-]` / `Cmd-[` as next/previous pane, which iTerm2 otherwise doesn't honour while Neovim has focus.
 

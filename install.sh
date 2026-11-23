@@ -10,7 +10,7 @@
 #   .gitignore_global   -> ~/.gitignore_global
 #   claude/keybindings.json -> ~/.claude/keybindings.json   Claude Code keybindings
 #   claude/settings.json    merged into ~/.claude/settings.json (not linked; see
-#                           extras/install-claude-settings.sh)
+#   claude/global-config.json  and merged into ~/.claude.json  extras/install-claude-settings.sh)
 #
 # An existing real file is moved to <file>.bak.<timestamp> first, so re-running
 # is safe. Exceptions:
